@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using GoFish.Models;
+using System.Collections.Generic;
 
 namespace GoFish.Controllers
 {
@@ -16,7 +17,15 @@ namespace GoFish.Controllers
     public ActionResult TakeTurn(string cardValue, string cardSuit)
     {
       Game gameObj = Game.GetInstance();
-      gameObj.AskCard(cardValue);
+      gameObj.AskCard(cardValue, cardSuit);
+      return RedirectToAction("Index");
+    }
+
+    [HttpPost("/draw")]
+    public ActionResult DrawCards()
+    {
+      Game gameObj = Game.GetInstance();
+      gameObj.DrawToMinHandSize();
       return RedirectToAction("Index");
     }
   }
