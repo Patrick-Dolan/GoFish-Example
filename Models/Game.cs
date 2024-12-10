@@ -5,12 +5,11 @@ namespace GoFish.Models
   public class Game
   {
     private static Game _instance;
-    public string Name {get; set;} = "My Game:";
-    public string Test {get; set;} = "WOOOO";
+    public string Name { get; } = "Go Fish";
     public Deck Deck { get; set; } = new Deck();
     public Player Player { get; set; } = new Player();
     public Player Computer { get; set; } = new Player();
-    public bool GoFish { get; set; } = false;
+    public bool CurrentPlayerDrawCard { get; set; } = false;
     private int MinHandSize { get; } = 5;
 
     public static Game GetInstance()
@@ -53,7 +52,7 @@ namespace GoFish.Models
       // Set GoFish so user must draw cards
       if (Player.Hand.Count < MinHandSize)
       {
-        GoFish = true;
+        CurrentPlayerDrawCard = true;
       }
     }
 
@@ -63,8 +62,17 @@ namespace GoFish.Models
       {
         List<Card> drawnCards = Deck.DrawCards(MinHandSize - Player.Hand.Count);
         Player.Hand.AddRange(drawnCards);
-        GoFish = false;
+        CurrentPlayerDrawCard = false;
       }
+    }
+
+    public void ResetGame()
+    {
+      Deck = new Deck();
+      Player = new Player();
+      Computer = new Player();
+      StartGame();
+      CurrentPlayerDrawCard = false;
     }
   }
 }
