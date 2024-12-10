@@ -28,5 +28,13 @@ namespace GoFish.Controllers
       gameObj.DrawToMinHandSize();
       return RedirectToAction("Index");
     }
+
+    [HttpPost("/reset-game")]
+    public ActionResult ResetGame()
+    {
+      Game gameObj = Game.GetInstance();
+      gameObj.ResetGame();
+      return RedirectToAction("Index");
+    }
   }
 }
