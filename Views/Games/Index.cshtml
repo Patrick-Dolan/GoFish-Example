@@ -1,0 +1,14 @@
+@using GoFish.Models
+
+<h1>@Model.Name</h1>
+
+<p>Player 1 Pairs: @Model.Player.Pairs</p>
+
+@foreach(Card card in @Model.Player.Hand)
+{
+  <form action="/take-turn" method="POST">
+    <input type="text" name="cardValue"  id="cardValue" value="@card.Value" hidden>
+    <input type="text" name="cardSuit" id="cardSuit" value="@card.Suit" hidden>
+    <button type="submit">@card.Value of @card.Suit</button>
+  </form>
+}
