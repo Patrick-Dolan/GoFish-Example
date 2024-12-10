@@ -1,0 +1,15 @@
+.deck {
+  display: flex;
+  justify-content: center;
+  margin: 4rem 0;
+}
+
+.deck > button {
+  padding: 4rem 6rem;
+}
+
+.player-card-display {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
