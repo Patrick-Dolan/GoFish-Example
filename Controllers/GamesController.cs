@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using GoFish.Models;
-using System.Collections.Generic;
 
 namespace GoFish.Controllers
 {
@@ -25,7 +24,15 @@ namespace GoFish.Controllers
     public ActionResult DrawCards()
     {
       Game gameObj = Game.GetInstance();
-      gameObj.DrawToMinHandSize();
+      if (gameObj.Player1.Hand.Count < gameObj.MinHandSize || gameObj.Player1.Hand.Count < gameObj.MinHandSize)
+      {
+        gameObj.DrawToMinHandSize();
+      }
+      else
+      {
+        gameObj.DrawCard();
+        gameObj.SwitchPlayerTurn();
+      }
       return RedirectToAction("Index");
     }
 
