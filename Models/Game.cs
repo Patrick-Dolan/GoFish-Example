@@ -10,7 +10,7 @@ namespace GoFish.Models
     public Player Player1 { get; set; } = new Player();
     public Player Player2 { get; set; } = new Player();
     public bool CurrentPlayerDrawCard { get; set; } = false;
-    private int MinHandSize { get; } = 5;
+    public readonly int MinHandSize = 5;
     public string CurrentPlayer { get; set; } = "Player1";
 
     public static Game GetInstance()
@@ -35,6 +35,7 @@ namespace GoFish.Models
       Player1 = new Player();
       Player2 = new Player();
       CurrentPlayerDrawCard = false;
+      CurrentPlayer = "Player1";
       StartGame();
     }
 
@@ -43,34 +44,43 @@ namespace GoFish.Models
       CurrentPlayer = CurrentPlayer == "Player1" ? "Player2" : "Player1";
     }
 
+    // AskCard determines current player, and looks for pairs in opposing player hand.
+    // If a pair is found the cards are removed from players hands and pairs prop is
+    // increased for asking player.
     public void AskCard(string cardValue, string cardSuit)
     {
-      // Loop through computer hand checking for match
-      for (int i = 0; i < Player2.Hand.Count; i++)
+      Player currentPlayer = CurrentPlayer == "Player1" ? Player1 : Player2;
+      Player askedPlayer = CurrentPlayer == "Player1" ? Player2 : Player1;
+
+      bool matchFound = false;
+      // Loop through askedPlayer hand checking for match
+      for (int i = 0; i < askedPlayer.Hand.Count; i++)
       {
-        if (Player2.Hand[i].Value == cardValue)
+        if (askedPlayer.Hand[i].Value == cardValue)
         {
-          Player2.Hand.RemoveAt(i);
-          // Loop through player hand and remove matched card
-          for (int j = 0; j < Player1.Hand.Count; j++)
+          matchFound = true;
+          currentPlayer.Pairs++;
+          // Remove cards from askedPlayer and currentPlayer
+          askedPlayer.Hand.RemoveAt(i);
+          for (int j = 0; j < currentPlayer.Hand.Count; j++)
           {
-            if (Player1.Hand[j].Value == cardValue && Player1.Hand[j].Suit == cardSuit)
+            if (currentPlayer.Hand[j].Value == cardValue && currentPlayer.Hand[j].Suit == cardSuit)
             {
-              Player1.Hand.RemoveAt(j);
+              currentPlayer.Hand.RemoveAt(j);
             }
           }
-          // Increase pairs if found
-          Player1.Pairs++;
           break;
         }
       }
-      // Set GoFish so user must draw cards
-      if (Player1.Hand.Count < MinHandSize)
+      // Set CurrentPlayerDrawCard so user must draw cards
+      if (currentPlayer.Hand.Count < MinHandSize || !matchFound)
       {
         CurrentPlayerDrawCard = true;
       }
     }
 
+    // TODO fix so that if the deck is empty the change turns instead?
+    // Might make more sense todo that logic in controller.
     public void DrawToMinHandSize()
     {
       if (Player1.Hand.Count < MinHandSize)
@@ -79,6 +89,21 @@ namespace GoFish.Models
         Player1.Hand.AddRange(drawnCards);
         CurrentPlayerDrawCard = false;
       }
+      if (Player2.Hand.Count < MinHandSize)
+      {
+        List<Card> drawnCards = Deck.DrawCards(MinHandSize - Player2.Hand.Count);
+        Player2.Hand.AddRange(drawnCards);
+        CurrentPlayerDrawCard = false;
+      }
+    }
+
+    // Draws a card for the current player
+    public void DrawCard()
+    {
+      Player currentPlayer = CurrentPlayer == "Player1" ? Player1 : Player2;
+      Card drawnCard = Deck.DrawCards(1)[0];
+      currentPlayer.Hand.Add(drawnCard);
+      CurrentPlayerDrawCard = false;
     }
   }
 }
